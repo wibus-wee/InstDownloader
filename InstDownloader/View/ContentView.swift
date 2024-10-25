@@ -58,7 +58,7 @@ struct ContentView: View {
                     
                     HStack(spacing: 10){
                         
-                        Text("指北者伴奏下载器 © Wibus.")
+                        Text("InstDownloader © Wibus.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Text("于 2024 年 10 月 20 日发布")

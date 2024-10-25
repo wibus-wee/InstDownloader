@@ -37,7 +37,7 @@ struct SettingsView: View {
                         .font(.title2)
                         .bold()
 
-                    Text("设置指北者伴奏下载器的行为")
+                    Text("设置InstDownloader的行为")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -70,7 +70,7 @@ struct SettingsView: View {
                         .padding()
                     
                     HStack(spacing: 10) {
-                        Text("指北者伴奏下载器 © Wibus.")
+                        Text("InstDownloader © Wibus.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Text("于 2024 年 10 月 20 日发布")
