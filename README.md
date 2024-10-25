@@ -1,4 +1,7 @@
 <p align="center">
+  <p align="center">
+    <img src="./InstDownloader/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png" alt="Preview" width="128" />
+  </p>
 	<h1 align="center"><b>InstDownloader</b></h1>
 	<p align="center">
 		Download Inst Music from Internet (Multiple Sources)
