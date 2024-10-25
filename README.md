@@ -18,7 +18,7 @@
 
 ## 👀 Preview
 
-![macOS Dock](./Preview.png)
+<img src="./Preview.png" alt="Preview" width="500" />
 
 ## 📄 License
 
