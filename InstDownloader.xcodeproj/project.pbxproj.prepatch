@@ -162,11 +162,6 @@
 		3880CF042CC4FD660023919F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-                OTHER_LDFLAGS = (
-                    "-Xlinker",
-                    "-interposable",
-                );
-                ENABLE_BITCODE = NO;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -281,11 +276,6 @@
 		3880CF072CC4FD660023919F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-                OTHER_LDFLAGS = (
-                    "-Xlinker",
-                    "-interposable",
-                );
-                ENABLE_BITCODE = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = InstDownloader/InstDownloader.entitlements;

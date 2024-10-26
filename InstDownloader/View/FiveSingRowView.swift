@@ -30,7 +30,12 @@ struct FiveSingRowView: View {
         .sheet(isPresented: $showDetail) {
             FiveSingDetailView(song: song)
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private func toggleFavorite() {
         let favoriteSong = FavoriteSong(
@@ -137,7 +142,12 @@ struct FiveSingDetailView: View {
         .onAppear {
             loadSongDetails()
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private func loadSongDetails() {
         Task {

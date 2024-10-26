@@ -81,7 +81,12 @@ struct FavoritesView: View {
         }
         .background(.ultraThinMaterial)
         .frame(width: 350, height: 450)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()

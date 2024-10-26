@@ -92,5 +92,10 @@ struct SettingsView: View {
         }
         .frame(width: 350, height: 300)
         .background(.ultraThinMaterial)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }

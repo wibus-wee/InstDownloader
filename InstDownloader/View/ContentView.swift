@@ -123,7 +123,12 @@ struct ContentView: View {
             performSearch()
         }
         .environmentObject(favoritesViewModel)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 
     private func performSearch() {
         isSearching = true

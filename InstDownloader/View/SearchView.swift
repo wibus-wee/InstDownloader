@@ -19,5 +19,10 @@ struct SearchView: View {
             Button("搜索", action: onSearch)
         }
         .padding()
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }

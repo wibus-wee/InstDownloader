@@ -38,7 +38,12 @@ struct AccompanyRowView: View {
         .sheet(isPresented: $showDetail) {
             AccompanyDetailView(accompany: accompany)
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
@@ -151,7 +156,12 @@ struct AccompanyDetailView: View {
             .padding()
         }
         .frame(width: 400, alignment: .leading)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
