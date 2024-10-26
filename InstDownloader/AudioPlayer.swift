@@ -13,10 +13,11 @@ class AudioPlayer: ObservableObject {
     @Published var progress: Double = 0
     @Published var duration: Double = 0
     private var timeObserver: Any?
-    
+    @Published var currentUrl: String?
+
     func togglePlayPause(urlString: String) {
         guard let url = URL(string: urlString) else { return }
-        
+        currentUrl = urlString
         if isPlaying {
             player?.pause()
             isPlaying = false

@@ -14,7 +14,8 @@ struct ContentView: View {
     @StateObject private var zhibeizheViewModel = AccompanyListViewModel()
     @StateObject private var settingsViewModel = SettingsViewModel()
     @StateObject private var fiveSingViewModel = FiveSingService()
-    
+    @StateObject private var favoritesViewModel = FavoritesViewModel()
+
     @State private var searchText = ""
     @State private var isSearching = false
     @State private var settingsWindowController: NSWindowController?
@@ -27,6 +28,9 @@ struct ContentView: View {
                 SearchView(searchText: $searchText, onSearch: performSearch)
                 Button(action: { openSettingsWindow() }) {
                     Image(systemName: "gear")
+                }
+                Button(action: { openFavoritesWindow() }) {
+                    Image(systemName: "heart.fill")
                 }
             }
 
@@ -118,6 +122,7 @@ struct ContentView: View {
             currentPage = 1
             performSearch()
         }
+        .environmentObject(favoritesViewModel)
     }
 
     private func performSearch() {
@@ -160,30 +165,29 @@ struct ContentView: View {
         }
     }
 
+    private func openANewWindow(title: String, contentView: some View, width: CGFloat = 300, height: CGFloat = 300) {
+        let window = NSWindow(contentRect: NSRect(x: 200, y: 200, width: width, height: height), styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
+        window.backgroundColor = .clear
+        window.styleMask.insert(.fullSizeContentView)
+        window.standardWindowButton(.closeButton)?.isHidden = false
+        window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        window.standardWindowButton(.zoomButton)?.isHidden = true
+        window.contentView = NSHostingView(rootView: contentView)
+        
+        let windowController = NSWindowController(window: window)
+        windowController.showWindow(nil)
+    }
+
+    private func openFavoritesWindow() {
+        let favoritesView = FavoritesView()
+            .environmentObject(favoritesViewModel)
+        openANewWindow(title: "收藏夹", contentView: favoritesView, width: 350, height: 450)
+    }
+
     private func openSettingsWindow() {
-        if let windowController = settingsWindowController {
-            windowController.showWindow(nil)
-        } else {
-            let settingsWindow = NSWindow(
-                contentRect: NSRect(x: 200, y: 200, width: 300, height: 300),
-                styleMask: [.titled, .closable, .miniaturizable, .resizable],
-                backing: .buffered,
-                defer: false
-            )
-            settingsWindow.titleVisibility = .hidden
-            settingsWindow.titlebarAppearsTransparent = true
-            settingsWindow.backgroundColor = .clear
-            settingsWindow.styleMask.insert(.fullSizeContentView)
-            settingsWindow.standardWindowButton(.closeButton)?.isHidden = false
-            settingsWindow.standardWindowButton(.miniaturizeButton)?.isHidden = true
-            settingsWindow.standardWindowButton(.zoomButton)?.isHidden = true
-            let settingsView = SettingsView(viewModel: settingsViewModel)
-            settingsWindow.contentView = NSHostingView(rootView: settingsView)
-            
-            let windowController = NSWindowController(window: settingsWindow)
-            settingsWindowController = windowController
-            
-            windowController.showWindow(nil)
-        }
+        let settingsView = SettingsView(viewModel: settingsViewModel)
+        openANewWindow(title: "设置", contentView: settingsView)
     }
 }

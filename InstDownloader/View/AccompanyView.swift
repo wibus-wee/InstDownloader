@@ -6,23 +6,31 @@
 //
 
 import SwiftUI
-import WindowAnimation
 
 
 struct AccompanyRowView: View {
     let accompany: AccompanyListRow
     @State private var showDetail = false
+    @EnvironmentObject var favoritesViewModel: FavoritesViewModel
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(accompany.accName)
-                .font(.headline)
-            Text("作者: \(accompany.accUserName)")
-                .font(.subheadline)
-            Text("上传时间: \(formatDate(accompany.accTime))")
-                .font(.caption)
+        HStack {
+            VStack(alignment: .leading) {
+                Text(accompany.accName)
+                    .font(.headline)
+                Text("作者: \(accompany.accUserName)")
+                    .font(.subheadline)
+                Text("上传时间: \(formatDate(accompany.accTime))")
+                    .font(.caption)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Button(action: {
+                toggleFavorite()
+            }) {
+                Image(systemName: favoritesViewModel.isFavorite(accompany.accId) ? "heart.fill" : "heart")
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .onTapGesture {
             showDetail = true
@@ -31,11 +39,28 @@ struct AccompanyRowView: View {
             AccompanyDetailView(accompany: accompany)
         }
     }
-
+    
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter.string(from: date)
+    }
+    
+    private func toggleFavorite() {
+        let favoriteSong = FavoriteSong(
+            id: accompany.accId,
+            name: accompany.accName,
+            source: .zhibeizhe,
+            uploadTime: accompany.accTime,
+            songId: accompany.accId,
+            songUrl: accompany.accFileUrl
+        )
+        
+        if favoritesViewModel.isFavorite(accompany.accId) {
+            favoritesViewModel.removeFavorite(favoriteSong)
+        } else {
+            favoritesViewModel.addFavorite(favoriteSong)
+        }
     }
 }
 

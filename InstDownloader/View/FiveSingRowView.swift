@@ -3,23 +3,49 @@ import SwiftUI
 struct FiveSingRowView: View {
     let song: FiveSingSearchResult.SongInfo
     @State private var showDetail = false
+    @EnvironmentObject var favoritesViewModel: FavoritesViewModel
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(song.songName)
-                .font(.headline)
-            Text("歌手: \(song.singer)")
-                .font(.subheadline)
-            Text("上传时间: \(song.createTime)")
-                .font(.caption)
+        HStack {
+            VStack(alignment: .leading) {
+                Text(song.songName)
+                    .font(.headline)
+                Text("歌手: \(song.singer)")
+                    .font(.subheadline)
+                Text("上传时间: \(song.createTime)")
+                    .font(.caption)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Button(action: {
+                toggleFavorite()
+            }) {
+                Image(systemName: favoritesViewModel.isFavorite(String(song.songId)) ? "heart.fill" : "heart")
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .onTapGesture {
             showDetail = true
         }
         .sheet(isPresented: $showDetail) {
             FiveSingDetailView(song: song)
+        }
+    }
+    
+    private func toggleFavorite() {
+        let favoriteSong = FavoriteSong(
+            id: "5Sing-\(String(song.songId))",
+            name: song.songName,
+            source: .fiveSing,
+            uploadTime: ISO8601DateFormatter().date(from: song.createTime) ?? Date(),
+            songId: String(song.songId),
+            songUrl: nil
+        )
+        
+        if favoritesViewModel.isFavorite(String(song.songId)) {
+            favoritesViewModel.removeFavorite(favoriteSong)
+        } else {
+            favoritesViewModel.addFavorite(favoriteSong)
         }
     }
 }

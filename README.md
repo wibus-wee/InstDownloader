@@ -21,6 +21,7 @@
 
 - [x] Single Source
 - [x] Multiple Sources
+- [x] Favorites Management
 - [ ] More...
 
 ## 👀 Preview
