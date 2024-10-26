@@ -55,7 +55,16 @@ struct SettingsView: View {
                                 }
                             }
 
-                            Text("选择搜索结果的来源，选择不同来源都会将所有结果混合并统一按照上传时间排序")
+                            Text("选择搜索结果的来源，选择不同来源会影响搜索结果的呈现")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("不同来源的区别：")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("指北者 - 搜索较慢，曲库质量尚可")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("5Sing - 搜索较快，曲库质量混杂")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -84,8 +93,4 @@ struct SettingsView: View {
         .frame(width: 350, height: 300)
         .background(.ultraThinMaterial)
     }
-}
-
-#Preview {
-    SettingsView()
 }

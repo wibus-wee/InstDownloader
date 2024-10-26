@@ -114,7 +114,7 @@ struct ContentView: View {
         .animation(.spring(), value: zhibeizheViewModel.accompanyList)
         .padding(16)
         .background(.ultraThinMaterial)
-        .onChange(of: settingsViewModel.searchSource) { _ in
+        .onChange(of: settingsViewModel.searchSource) { oldValue, newValue in
             currentPage = 1
             performSearch()
         }
