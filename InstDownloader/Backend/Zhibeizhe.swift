@@ -106,6 +106,9 @@ extension URLRequest {
     static func createRequest(url: String, query: [String: Any]) -> URLRequest {
         var components = URLComponents(string: url)!
         components.queryItems = query.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
+        #if DEBUG
+            print("请求URL: \(components.url?.absoluteString ?? "未知")")
+        #endif
         var request = URLRequest(url: components.url!)
         request.httpMethod = "GET"
         return request

@@ -9,8 +9,7 @@ import SwiftUI
 
 enum SearchSource: String, CaseIterable {
     case zhibeizhe = "指北者"
-    case fiveSing = "5sing"
-    case both = "混合"
+    case fiveSing = "5Sing"
 }
 
 class SettingsViewModel: ObservableObject {
@@ -21,8 +20,8 @@ class SettingsViewModel: ObservableObject {
     }
 
     init() {
-        let savedSource = UserDefaults.standard.string(forKey: "searchSource") ?? SearchSource.both.rawValue
-        self.searchSource = SearchSource(rawValue: savedSource) ?? .both
+        let savedSource = UserDefaults.standard.string(forKey: "searchSource") ?? SearchSource.zhibeizhe.rawValue
+        self.searchSource = SearchSource(rawValue: savedSource) ?? .zhibeizhe
     }
 }
 
@@ -56,7 +55,7 @@ struct SettingsView: View {
                                 }
                             }
 
-                            Text("选择搜索结果的来源，选择混合来源则会将所有结果混合并统一按照上传时间排序")
+                            Text("选择搜索结果的来源，选择不同来源都会将所有结果混合并统一按照上传时间排序")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }

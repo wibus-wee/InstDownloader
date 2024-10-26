@@ -13,11 +13,14 @@ let url = "http://xp.yuepuvip.com:8100/one/accompany/list"
 struct ContentView: View {
     @StateObject private var zhibeizheViewModel = AccompanyListViewModel()
     @StateObject private var settingsViewModel = SettingsViewModel()
+    @StateObject private var fiveSingViewModel = FiveSingService()
     
     @State private var searchText = ""
     @State private var isSearching = false
     @State private var settingsWindowController: NSWindowController?
-
+    @State private var currentPage = 1
+    @State private var itemsPerPage = 20
+    
     var body: some View {
         VStack {
             HStack {
@@ -27,30 +30,65 @@ struct ContentView: View {
                 }
             }
 
-            if zhibeizheViewModel.isSearching {
+            if zhibeizheViewModel.isSearching || fiveSingViewModel.isSearching {
                 ProgressView()
                     .padding()
             } else {
                 VStack {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 10) {
-                            if zhibeizheViewModel.accompanyList.count > 0 {
-                                ForEach(zhibeizheViewModel.accompanyList, id: \.accId) { accompany in
-                                    AccompanyRowView(accompany: accompany)
-                                        .background(Color.gray.opacity(0.1))
-                                        .cornerRadius(10)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
+                            switch settingsViewModel.searchSource {
+                            case .zhibeizhe:
+                                if zhibeizheViewModel.accompanyList.isEmpty {
+                                    Text("没有找到伴奏")
+                                        .foregroundColor(.secondary)
+                                        .padding()
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .font(.title3)
+                                } else {
+                                    ForEach(zhibeizheViewModel.accompanyList, id: \.accId) { accompany in
+                                        AccompanyRowView(accompany: accompany)
+                                            .background(Color.gray.opacity(0.1))
+                                            .cornerRadius(10)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
                                 }
-                            } else {
-                                Text("没有找到伴奏")
-                                    .foregroundColor(.secondary)
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .font(.title3)
+                            case .fiveSing:
+                                if fiveSingViewModel.searchResults.isEmpty {
+                                    Text("没有找到歌曲")
+                                        .foregroundColor(.secondary)
+                                        .padding()
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .font(.title3)
+                                } else {
+                                    ForEach(fiveSingViewModel.searchResults, id: \.songId) { song in
+                                        FiveSingRowView(song: song)
+                                            .background(Color.gray.opacity(0.1))
+                                            .cornerRadius(10)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                }
                             }
                         }
                     }
                     .frame(height: 500)
+                    
+                    HStack {
+                        Button("上一页") {
+                            goToPreviousPage()
+                        }
+                        .disabled(currentPage == 1 || isSearching)
+
+                        Text("第 \(currentPage) 页")
+
+                        Button("下一页") {
+                            goToNextPage()
+                        }
+                        .disabled(isSearching || 
+                            (settingsViewModel.searchSource == .zhibeizhe && !zhibeizheViewModel.hasMorePages) ||
+                            (settingsViewModel.searchSource == .fiveSing && !fiveSingViewModel.hasMorePages))
+                    }
+                    .padding()
                     
                     Spacer(minLength: 16)
                     Divider()
@@ -70,25 +108,55 @@ struct ContentView: View {
         }
         .navigationTitle("伴奏下载器")
         .onAppear {
-            zhibeizheViewModel.fetchAccompanyList()
+            performSearch()
         }
         .frame(width: 400, alignment: .leading)
         .animation(.spring(), value: zhibeizheViewModel.accompanyList)
         .padding(16)
         .background(.ultraThinMaterial)
+        .onChange(of: settingsViewModel.searchSource) { _ in
+            currentPage = 1
+            performSearch()
+        }
     }
 
     private func performSearch() {
         isSearching = true
         
-        switch settingsViewModel.searchSource {
-        case .zhibeizhe:
-            zhibeizheViewModel.fetchAccompanyList(name: searchText)
-        case .fiveSing:
-            print()
-        case .both:
-            print()
+        Task {
+            do {
+                switch settingsViewModel.searchSource {
+                case .zhibeizhe:
+                    await zhibeizheViewModel.fetchAccompanyList(name: searchText, page: currentPage, limit: itemsPerPage)
+                case .fiveSing:
+                    try await fiveSingViewModel.searchSongs(keyword: searchText, page: String(currentPage))
+                }
+            } catch {
+                let errorMessage = error.localizedDescription
+                DispatchQueue.main.async {
+                    let alert = NSAlert()
+                    alert.alertStyle = .critical
+                    alert.messageText = "搜索错误: \(errorMessage)"
+                    alert.runModal()
+                }
+                print("搜索错误: \(error)")
+            }
             
+            DispatchQueue.main.async {
+                isSearching = false
+            }
+        }
+    }
+
+    private func goToNextPage() {
+        currentPage += 1
+        performSearch()
+    }
+
+    private func goToPreviousPage() {
+        if currentPage > 1 {
+            currentPage -= 1
+            performSearch()
         }
     }
 
