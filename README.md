@@ -20,7 +20,7 @@
 ## 🌟 Features
 
 - [x] Single Source
-- [ ] Multiple Sources
+- [x] Multiple Sources
 - [ ] More...
 
 ## 👀 Preview
