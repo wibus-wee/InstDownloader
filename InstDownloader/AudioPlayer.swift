@@ -17,7 +17,14 @@ class AudioPlayer: ObservableObject {
 
     func togglePlayPause(urlString: String) {
         guard let url = URL(string: urlString) else { return }
-        currentUrl = urlString
+        
+        if urlString != currentUrl { // 如果当前播放的歌曲不是当前的歌曲，则暂停当前的歌曲, 并重置播放器
+            player?.pause()
+            isPlaying = false
+            player = nil
+            currentUrl = urlString
+        }
+
         if isPlaying {
             player?.pause()
             isPlaying = false

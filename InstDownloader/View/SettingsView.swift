@@ -72,21 +72,7 @@ struct SettingsView: View {
                 }
                 .padding()
 
-                Spacer(minLength: 16)
-                VStack {
-                    Divider()
-                        .padding()
-                    
-                    HStack(spacing: 10) {
-                        Text("InstDownloader © Wibus.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Text("于 2024 年 10 月 20 日发布")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding()
+                FooterView()
 
             }
         }
