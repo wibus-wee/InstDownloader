@@ -10,6 +10,15 @@ import SwiftUI
 enum SearchSource: String, CaseIterable {
     case zhibeizhe = "指北者"
     case fiveSing = "5Sing"
+    case zhibeizheVideo = "指北者视频"
+
+    var description: String {
+        switch self {
+        case .zhibeizhe: return "指北者 - 搜索较慢，曲库质量尚可"
+        case .fiveSing: return "5Sing - 搜索较快，曲库质量混杂"
+        case .zhibeizheVideo: return "指北者视频 - 搜索较慢，视频质量尚可"
+        }
+    }
 }
 
 class SettingsViewModel: ObservableObject {
@@ -61,12 +70,11 @@ struct SettingsView: View {
                             Text("不同来源的区别：")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            Text("指北者 - 搜索较慢，曲库质量尚可")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text("5Sing - 搜索较快，曲库质量混杂")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            ForEach(SearchSource.allCases, id: \.self) { source in
+                                Text(source.description)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }

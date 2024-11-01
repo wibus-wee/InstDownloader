@@ -5,8 +5,8 @@
 //  Created by wibus on 2024/10/20.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 let url = "http://xp.yuepuvip.com:8100/one/accompany/list"
 
@@ -14,6 +14,7 @@ struct ContentView: View {
     @StateObject private var zhibeizheViewModel = AccompanyListViewModel()
     @StateObject private var settingsViewModel = SettingsViewModel()
     @StateObject private var fiveSingViewModel = FiveSingService()
+    @StateObject private var videoListViewModel = ZhibeizheVideoListViewModel()
     @StateObject private var favoritesViewModel = FavoritesViewModel()
 
     @State private var searchText = ""
@@ -21,7 +22,7 @@ struct ContentView: View {
     @State private var settingsWindowController: NSWindowController?
     @State private var currentPage = 1
     @State private var itemsPerPage = 20
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -57,6 +58,7 @@ struct ContentView: View {
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                     }
                                 }
+
                             case .fiveSing:
                                 if fiveSingViewModel.searchResults.isEmpty {
                                     Text("没有找到歌曲")
@@ -72,11 +74,27 @@ struct ContentView: View {
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                     }
                                 }
+
+                            case .zhibeizheVideo:
+                                if videoListViewModel.videoList.isEmpty {
+                                    Text("没有找到视频")
+                                        .foregroundColor(.secondary)
+                                        .padding()
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .font(.title3)
+                                } else {
+                                    ForEach(videoListViewModel.videoList, id: \.specId) { video in
+                                        VideoRowView(video: video)
+                                            .background(Color.gray.opacity(0.1))
+                                            .cornerRadius(10)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                }
                             }
                         }
                     }
                     .frame(height: 500)
-                    
+
                     HStack {
                         Button("上一页") {
                             goToPreviousPage()
@@ -88,18 +106,17 @@ struct ContentView: View {
                         Button("下一页") {
                             goToNextPage()
                         }
-                        .disabled(isSearching || 
+                        .disabled(isSearching ||
                             (settingsViewModel.searchSource == .zhibeizhe && !zhibeizheViewModel.hasMorePages) ||
                             (settingsViewModel.searchSource == .fiveSing && !fiveSingViewModel.hasMorePages))
                     }
                     .padding()
-                    
+
                     Spacer(minLength: 16)
                     Divider()
                     Spacer()
-                    
-                    HStack(spacing: 10){
-                        
+
+                    HStack(spacing: 10) {
                         Text("InstDownloader © Wibus.")
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -118,7 +135,7 @@ struct ContentView: View {
         .animation(.spring(), value: zhibeizheViewModel.accompanyList)
         .padding(16)
         .background(.ultraThinMaterial)
-        .onChange(of: settingsViewModel.searchSource) { oldValue, newValue in
+        .onChange(of: settingsViewModel.searchSource) { _, _ in
             currentPage = 1
             performSearch()
         }
@@ -127,12 +144,12 @@ struct ContentView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 
     private func performSearch() {
         isSearching = true
-        
+
         Task {
             do {
                 switch settingsViewModel.searchSource {
@@ -140,6 +157,8 @@ struct ContentView: View {
                     await zhibeizheViewModel.fetchAccompanyList(name: searchText, page: currentPage, limit: itemsPerPage)
                 case .fiveSing:
                     try await fiveSingViewModel.searchSongs(keyword: searchText, page: String(currentPage))
+                case .zhibeizheVideo:
+                    await videoListViewModel.fetchVideoList(name: searchText, page: currentPage, limit: itemsPerPage)
                 }
             } catch {
                 let errorMessage = error.localizedDescription
@@ -151,7 +170,7 @@ struct ContentView: View {
                 }
                 print("搜索错误: \(error)")
             }
-            
+
             DispatchQueue.main.async {
                 isSearching = false
             }
@@ -170,7 +189,7 @@ struct ContentView: View {
         }
     }
 
-    private func openANewWindow(title: String, contentView: some View, width: CGFloat = 300, height: CGFloat = 300) {
+    private func openANewWindow(title _: String, contentView: some View, width: CGFloat = 300, height: CGFloat = 300) {
         let window = NSWindow(contentRect: NSRect(x: 200, y: 200, width: width, height: height), styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
@@ -180,7 +199,7 @@ struct ContentView: View {
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true
         window.contentView = NSHostingView(rootView: contentView)
-        
+
         let windowController = NSWindowController(window: window)
         windowController.showWindow(nil)
     }
