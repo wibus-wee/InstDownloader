@@ -214,7 +214,10 @@ struct PitchShiftView: View {
                 // 创建保存面板
                 let savePanel = NSSavePanel()
                 savePanel.allowedContentTypes = [.audio]
-                savePanel.nameFieldStringValue = "转调后的音频.m4a"
+                // savePanel.nameFieldStringValue = "转调后的音频.m4a"
+                // 原文件名
+                let originalName = inputURL.lastPathComponent
+                savePanel.nameFieldStringValue = "已转调_\(originalName.dropLast(4)).m4a"
 
                 savePanel.begin { response in
                     if response == .OK, let saveURL = savePanel.url {

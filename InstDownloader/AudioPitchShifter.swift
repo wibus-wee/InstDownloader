@@ -15,13 +15,26 @@ class AudioPitchShifter: ObservableObject {
         isProcessing = true
         progress = 0
 
-        let outputURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString)
-            .appendingPathExtension("m4a")
-
         do {
+            // 先转换格式
+            let compatibleURL = try convertToCompatibleFormat(inputURL)
+
+            // 检查文件格式
+            guard (try? AVAudioFile(forReading: compatibleURL).processingFormat) != nil else {
+                DispatchQueue.main.async {
+                    completion(.failure(NSError(domain: "AudioProcessingError", 
+                                             code: -1, 
+                                             userInfo: [NSLocalizedDescriptionKey: "不支持的音频格式"])))
+                }
+                return
+            }
+
+            let outputURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension("m4a")
+
             // 读取输入文件
-            let file = try AVAudioFile(forReading: inputURL)
+            let file = try AVAudioFile(forReading: compatibleURL)
             let format = file.processingFormat
 
             // 创建离线引擎
@@ -107,5 +120,29 @@ class AudioPitchShifter: ObservableObject {
                 print(error)
             }
         }
+    }
+
+    private func convertToCompatibleFormat(_ inputURL: URL) throws -> URL {
+        let asset = AVAsset(url: inputURL)
+        let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetAppleM4A)
+        
+        let outputURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("m4a")
+        
+        exportSession?.outputURL = outputURL
+        exportSession?.outputFileType = .m4a
+        
+        let semaphore = DispatchSemaphore(value: 0)
+        exportSession?.exportAsynchronously {
+            semaphore.signal()
+        }
+        semaphore.wait()
+        
+        if let error = exportSession?.error {
+            throw error
+        }
+        
+        return outputURL
     }
 }
