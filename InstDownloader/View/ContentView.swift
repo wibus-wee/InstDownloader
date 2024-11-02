@@ -33,6 +33,9 @@ struct ContentView: View {
                 Button(action: { openFavoritesWindow() }) {
                     Image(systemName: "heart.fill")
                 }
+                Button(action: { openPitchShiftWindow() }) {
+                    Image(systemName: "metronome")
+                }
             }
 
             if zhibeizheViewModel.isSearching || fiveSingViewModel.isSearching {
@@ -213,5 +216,10 @@ struct ContentView: View {
     private func openSettingsWindow() {
         let settingsView = SettingsView(viewModel: settingsViewModel)
         openANewWindow(title: "设置", contentView: settingsView)
+    }
+
+    private func openPitchShiftWindow() {
+        let pitchShiftView = PitchShiftView()
+        openANewWindow(title: "变调", contentView: pitchShiftView, width: 350, height: 450)
     }
 }
