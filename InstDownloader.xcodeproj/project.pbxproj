@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,7 +16,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		3880CF0A2CC502470023919F /* Exceptions for "InstDownloader" folder in "InstDownloader" target */ = {
+		3880CF0A2CC502470023919F /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -26,14 +26,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3880CEF92CC4FD650023919F /* InstDownloader */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				3880CF0A2CC502470023919F /* Exceptions for "InstDownloader" folder in "InstDownloader" target */,
-			);
-			path = InstDownloader;
-			sourceTree = "<group>";
-		};
+		3880CEF92CC4FD650023919F /* InstDownloader */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (3880CF0A2CC502470023919F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = InstDownloader; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +109,7 @@
 				};
 			};
 			buildConfigurationList = 3880CEF22CC4FD650023919F /* Build configuration list for PBXProject "InstDownloader" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -128,7 +122,6 @@
 				38F7F2FB2CCA79EC002ECC20 /* XCRemoteSwiftPackageReference "WindowAnimation" */,
 				3849EC942CCC993900F86CDF /* XCRemoteSwiftPackageReference "Inject" */,
 			);
-			preferredProjectObjectVersion = 77;
 			productRefGroup = 3880CEF82CC4FD650023919F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
