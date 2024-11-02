@@ -137,7 +137,7 @@ struct ContentView: View {
         .frame(width: 400, alignment: .leading)
         .animation(.spring(), value: zhibeizheViewModel.accompanyList)
         .padding(16)
-        .background(.ultraThinMaterial)
+        .background(.regularMaterial)
         .onChange(of: settingsViewModel.searchSource) { newValue in
             currentPage = 1
             performSearch()

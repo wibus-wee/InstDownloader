@@ -64,7 +64,7 @@ struct FavoritesView: View {
             }
             FooterView()
         }
-        .background(.ultraThinMaterial)
+        .background(.regularMaterial)
         .frame(width: 350, height: 450)
         .enableInjection()
     }

@@ -85,7 +85,7 @@ struct SettingsView: View {
             }
         }
         .frame(width: 350, height: 300)
-        .background(.ultraThinMaterial)
+        .background(.regularMaterial)
         .enableInjection()
     }
 

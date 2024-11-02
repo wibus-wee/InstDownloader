@@ -51,12 +51,19 @@ struct PitchShiftView: View {
                         .frame(width: 200, height: 100)
                         .foregroundColor(isDragging ? .blue : .gray)
 
-                    if let url = audioURL {
-                        Text(url.lastPathComponent)
-                            .lineLimit(1)
-                    } else {
-                        Text("拖拽音频文件到这里")
-                            .foregroundColor(.gray)
+                    HStack(spacing: 10) {
+                        Image(systemName: "music.note")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+
+                        if let url = audioURL {
+                            Text(url.lastPathComponent)
+                                .truncationMode(.middle)
+                                .frame(maxWidth: 100)
+                        } else {
+                            Text("拖拽音频文件到这里")
+                                .foregroundColor(.gray)
+                        }
                     }
                 }
                 .onDrop(of: [.fileURL], isTargeted: $isDragging) { providers in
@@ -79,8 +86,19 @@ struct PitchShiftView: View {
                                     for pitch in Pitch.allCases {
                                         // 检查文件名中是否包含 "X调" 或 "KEY OF X" 的模式
                                         if filename.contains("\(pitch.rawValue)调") ||
-                                           filename.contains("\(pitch.rawValue) 调") {
-                                            self.originalPitch = pitch
+                                            filename.contains("\(pitch.rawValue) 调")
+                                        {
+                                            // 他文件名有可能是：降B调，升B调，那这样就会出现问题了
+                                            if filename.contains("降") || filename.contains("升") {
+                                                // 如果文件名包含降或升，则将音调设置为当前识别到的音调的降或升
+                                                if filename.contains("降") {
+                                                    self.originalPitch = Pitch(rawValue: "\(pitch.rawValue)b")!
+                                                } else {
+                                                    self.originalPitch = Pitch(rawValue: "\(pitch.rawValue)#")!
+                                                }
+                                            } else {
+                                                self.originalPitch = pitch
+                                            }
                                             break
                                         }
 
@@ -150,8 +168,13 @@ struct PitchShiftView: View {
 
                 // 显示转调信息
                 if semitonesDiff != 0 {
-                    Text("需要将音频\(semitonesDiff > 0 ? "升高" : "降低") \(abs(semitonesDiff)) 个半音")
-                        .foregroundColor(.blue)
+                    VStack(alignment: .leading) {
+                      Text("需要将音频\(semitonesDiff > 0 ? "升高" : "降低") \(abs(semitonesDiff)) 个半音")
+                    }
+                    .padding()
+                    .foregroundColor(.secondary)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(10)
                 }
 
                 if pitchShifter.isProcessing {
@@ -172,8 +195,8 @@ struct PitchShiftView: View {
             }
         }
         .padding()
-        .background(.ultraThinMaterial)
-        .frame(width: 350, height: 400)
+        .background(.regularMaterial)
+        .frame(width: 350, height: 450)
         .enableInjection()
         .alert("处理结果", isPresented: $showAlert) {
             Button("确定", role: .cancel) {}
