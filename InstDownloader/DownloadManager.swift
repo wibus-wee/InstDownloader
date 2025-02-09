@@ -42,13 +42,21 @@ class DownloadManager: ObservableObject {
     }
 
     func downloadFile(from urlString: String, fileName: String) {
+        print("开始下载文件: \(fileName)")
+        print("Link: \(urlString)")
         guard let url = URL(string: urlString),
               let downloadDirectory = downloadDirectory else { return }
         
         isDownloading = true
         
-        let destinationURL = downloadDirectory.appendingPathComponent(fileName)
-
+        // 处理文件名，移除或替换不安全字符
+        let safeFileName = fileName
+            .components(separatedBy: CharacterSet(charactersIn: "\\/:*?\"<>|"))
+            .joined()
+            .addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? fileName
+        
+        let destinationURL = downloadDirectory.appendingPathComponent(safeFileName)
+        
         // 检查文件是否存在
         if FileManager.default.fileExists(atPath: destinationURL.path) {
             print("文件已存在: \(destinationURL.path)")
@@ -62,36 +70,53 @@ class DownloadManager: ObservableObject {
             return
         }
         
-        let downloadTask = URLSession.shared.downloadTask(with: url) { [weak self] localURL, _, error in
+        let downloadTask = URLSession.shared.downloadTask(with: url) { [weak self] localURL, response, error in
             DispatchQueue.main.async {
                 self?.isDownloading = false
                 self?.progress = 0
-                self?.progressObservation = nil  // 清除观察对象
+                self?.progressObservation = nil
                 
                 if let error = error {
                     print("下载错误: \(error)")
+                    let alert = NSAlert()
+                    alert.alertStyle = .critical
+                    alert.messageText = "下载错误: \(error.localizedDescription)"
+                    alert.runModal()
                     return
                 }
                 
                 guard let localURL = localURL else { return }
                 
                 do {
-                    try FileManager.default.moveItem(at: localURL, to: destinationURL)
-                    print("文件已下载到: \(destinationURL.path)")
-                    DispatchQueue.main.async {
-                        let alert = NSAlert()
-                        alert.alertStyle = .informational
-                        alert.messageText = "文件已下载到: \(destinationURL.path)"
-                        alert.runModal()
+                    // 确保目标目录存在
+                    try FileManager.default.createDirectory(
+                        at: downloadDirectory,
+                        withIntermediateDirectories: true,
+                        attributes: nil
+                    )
+                    
+                    // 如果目标文件已存在，先删除
+                    if FileManager.default.fileExists(atPath: destinationURL.path) {
+                        try FileManager.default.removeItem(at: destinationURL)
                     }
+                    
+                    // 使用 Data 方式复制文件，而不是直接移动
+                    let data = try Data(contentsOf: localURL)
+                    try data.write(to: destinationURL, options: .atomic)
+                    
+                    print("文件已下载到: \(destinationURL.path)")
+                    let alert = NSAlert()
+                    alert.alertStyle = .informational
+                    alert.messageText = "文件已下载到: \(destinationURL.path)"
+                    alert.runModal()
+                    
                 } catch {
                     print("保存文件时出错: \(error)")
-                    DispatchQueue.main.async {
-                        let alert = NSAlert()
-                        alert.alertStyle = .critical
-                        alert.messageText = "保存文件时出错: \(error)"
-                        alert.runModal()
-                    }
+                    let alert = NSAlert()
+                    alert.alertStyle = .critical
+                    alert.messageText = "保存文件时出错: \(error.localizedDescription)"
+                    alert.informativeText = "目标路径: \(destinationURL.path)"
+                    alert.runModal()
                 }
             }
         }

@@ -101,7 +101,7 @@ struct VideoDetailView: View {
                     
                     Button("下载") {
                         if downloadManager.downloadDirectory != nil {
-                            downloadManager.downloadFile(from: video.specUrl, fileName: "\(video.specName).mp4")
+                            downloadManager.downloadFile(from: video.noSpecUrl, fileName: "\(video.specName).mp4")
                         } else {
                             print("请先选择下载位置")
                         }

@@ -136,6 +136,8 @@ struct ContentView: View {
         }
         .frame(width: 400, alignment: .leading)
         .animation(.spring(), value: zhibeizheViewModel.accompanyList)
+        .animation(.spring(), value: videoListViewModel.videoList)
+        .animation(.spring(), value: fiveSingViewModel.searchResults)
         .padding(16)
         .background(.regularMaterial)
         .onChange(of: settingsViewModel.searchSource) { newValue in

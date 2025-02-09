@@ -47,7 +47,7 @@ struct DynamicSpecListResponse: Codable {
     let rows: [DynamicSpecListRow]
 }
 
-struct DynamicSpecListRow: Codable, Identifiable {
+struct DynamicSpecListRow: Codable, Identifiable, Equatable {
     let specId: String
     let specTune: String
     let specTuneName: String
@@ -87,6 +87,10 @@ struct DynamicSpecListRow: Codable, Identifiable {
     let songWriter: String?
     
     var id: String { specId }
+
+    static func == (lhs: DynamicSpecListRow, rhs: DynamicSpecListRow) -> Bool {
+        lhs.specId == rhs.specId
+    }
 }
 
 struct TrackListItem: Codable {
